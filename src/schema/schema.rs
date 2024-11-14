@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    auth (id) {
+    auths (id) {
         id -> Nullable<Integer>,
         username -> Text,
         password -> Text,
@@ -18,9 +18,7 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(users -> auth (auth_id));
-
 diesel::allow_tables_to_appear_in_same_query!(
-    auth,
+    auths,
     users,
 );
