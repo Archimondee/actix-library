@@ -4,6 +4,7 @@ use serde_json::json;
 pub async fn health_check() -> impl Responder {
     HttpResponse::Ok().json(json!({
       "status": "UP",
+      "code": 200,
       "message": "Service is runnning"
     }))
 }

@@ -3,8 +3,9 @@ mod handlers;
 mod models;
 mod queries;
 mod schema;
+mod utils;
 
-use actix_web::{middleware::Logger, web, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use db::establish_connection;
 
 use handlers::health_handlers::configure_health_handlers;
@@ -25,9 +26,11 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(utils::cors::cors())
+            .wrap(utils::logger::logger())
             .app_data(web::Data::new(pool.clone()))
-            .wrap(Logger::new("%a %T \"%r\" %s %b %Dms"))
             .service(web::scope("/v1").configure(configure_health_handlers))
+            .default_service(web::route().to(utils::not_found::not_found))
     })
     .bind("127.0.0.1:5100")?
     .run()
