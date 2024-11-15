@@ -8,7 +8,10 @@ mod utils;
 use std::time::Duration;
 
 use actix_governor::{Governor, GovernorConfigBuilder};
-use actix_web::{web, App, HttpServer};
+use actix_web::{
+    web::{self, JsonConfig},
+    App, HttpServer,
+};
 use db::establish_connection;
 use handlers::health_handlers::configure_health_handlers;
 use log::info;
@@ -37,6 +40,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(utils::logger())
             .wrap(utils::cors())
             .app_data(web::Data::new(pool.clone()))
+            .app_data(JsonConfig::default().limit(4096 * 1024))
             .wrap(Governor::new(&governor_conf))
             .service(web::scope("/v1").configure(configure_health_handlers))
             .default_service(web::route().to(utils::not_found))
